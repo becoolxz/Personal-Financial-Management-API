@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -33,11 +34,43 @@ public class CategoryController {
         return modelMapper.map(category, CategoryDTO.class);
     }
 
+    @GetMapping("{id}")
+    public CategoryDTO get(@PathVariable Long id) {
+        return categoryService
+                .getById(id)
+                .map( category -> modelMapper.map(category, CategoryDTO.class))
+                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        Category category = categoryService.getById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        categoryService.delete(category);
+    }
+
+    @PutMapping("{id}")
+    public CategoryDTO update(@PathVariable Long id, CategoryDTO categoryDTO) {
+        return categoryService.getById(id)
+                .map(category -> {
+
+                    category.setDescription(categoryDTO.getDescription());
+                    category = categoryService.update(category);
+                    return modelMapper.map(category, CategoryDTO.class);
+
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrors handleValidationExceptions(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
         return new ApiErrors(bindingResult);
     }
+
+
+
 
 }

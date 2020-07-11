@@ -5,6 +5,8 @@ import br.com.lucas.study.personalfinancialmanagementapi.model.repository.Catego
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -17,6 +19,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category save(Category category) {
         return categoryRepository.save(category);
+    }
+
+    @Override
+    public Optional<Category> getById(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void delete(Category category) {
+
+    }
+
+    @Override
+    public Category update(Category category) {
+        return null;
     }
 
 }
