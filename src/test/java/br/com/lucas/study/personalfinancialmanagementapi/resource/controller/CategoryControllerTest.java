@@ -1,6 +1,6 @@
-package br.com.lucas.study.personalfinancialmanagementapi.controller;
+package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
 
-import br.com.lucas.study.personalfinancialmanagementapi.dto.CategoryDTO;
+import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(controllers = CategoryController.class)
 @AutoConfigureMockMvc
 public class CategoryControllerTest {
 
@@ -47,7 +48,7 @@ public class CategoryControllerTest {
 
         categoryDTO.setDescription("Another description");
 
-        Category savedCategory = new Category(1L,"Another description");
+        Category savedCategory = new Category(1L,"Another description", Collections.emptyList());
         BDDMockito.given(categoryService.save(Mockito.any(Category.class))).willReturn(savedCategory);
         String json = new ObjectMapper().writeValueAsString(categoryDTO);
 
@@ -86,7 +87,7 @@ public class CategoryControllerTest {
 
         long id = 1L;
 
-        Category category = new Category(id, "Some category");
+        Category category = new Category(id, "Some category", Collections.emptyList());
         BDDMockito.given(categoryService.getById(id)).willReturn(Optional.of(category));
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -122,7 +123,7 @@ public class CategoryControllerTest {
     public void shouldDeleteCategoryTest() throws Exception {
 
         BDDMockito.given(categoryService.getById(Mockito.anyLong()))
-                .willReturn(Optional.of(new Category(1L,"Some category")));
+                .willReturn(Optional.of(new Category(1L,"Some category", Collections.emptyList())));
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete(CATEGORY_API.concat("/" + 1));
@@ -160,11 +161,11 @@ public class CategoryControllerTest {
 
         String json = new ObjectMapper().writeValueAsString(categoryDTO);
 
-        Category updatingCategory = new Category(1L, "Some category");
+        Category updatingCategory = new Category(1L, "Some category", Collections.emptyList());
 
         BDDMockito.given(categoryService.getById(id)).willReturn(Optional.of(updatingCategory));
 
-        BDDMockito.given(categoryService.update(updatingCategory)).willReturn(new Category(1L, "Another Category"));
+        BDDMockito.given(categoryService.update(updatingCategory)).willReturn(new Category(1L, "Another Category", Collections.emptyList()));
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .put(CATEGORY_API.concat("/" + 1))

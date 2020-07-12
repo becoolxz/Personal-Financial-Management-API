@@ -1,4 +1,4 @@
-package br.com.lucas.study.personalfinancialmanagementapi.dto;
+package br.com.lucas.study.personalfinancialmanagementapi.resource.dto;
 
 import javax.validation.constraints.NotEmpty;
 

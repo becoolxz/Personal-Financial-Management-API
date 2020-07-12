@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,7 @@ public class CategoryRepositoryTest {
     @Test
     @DisplayName("Should save a category.")
     public void shouldSaveCategory() {
-        Category category = new Category(null, "Some Category");
+        Category category = new Category(null, "Some Category", Collections.emptyList());
 
         Category savedCategory =  categoryRepository.save(category);
 
@@ -39,7 +40,7 @@ public class CategoryRepositoryTest {
     @Test
     @DisplayName("Should get a book by ID.")
     public void shouldFindCategoryById() {
-        Category category = new Category(null, "Some description");
+        Category category = new Category(null, "Some description", Collections.emptyList());
 
         category = entityManager.persist(category);
 
@@ -51,7 +52,7 @@ public class CategoryRepositoryTest {
     @Test
     @DisplayName("Should delete a Category.")
     public void shouldDeleteCategoryTest() {
-        Category category = new Category(null, "Some description");
+        Category category = new Category(null, "Some description", Collections.emptyList());
 
         entityManager.persist(category);
 

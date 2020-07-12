@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +39,7 @@ public class CategoryServiceTest {
         category.setDescription("Some description");
 
         Mockito.when(categoryRepository.save(category))
-                .thenReturn(new Category(1L, "Some description"));
+                .thenReturn(new Category(1L, "Some description", Collections.emptyList()));
 
         Category savedCategory = categoryService.save(category);
 
@@ -52,7 +53,7 @@ public class CategoryServiceTest {
         Long id = 1L;
 
         Mockito.when(categoryRepository.findById(id))
-                .thenReturn(Optional.of(new Category(id, "Some description")));
+                .thenReturn(Optional.of(new Category(id, "Some description", Collections.emptyList())));
 
         Optional<Category> foundCategory = categoryService.getById(id);
 
@@ -78,7 +79,7 @@ public class CategoryServiceTest {
     @DisplayName("Should delete a category by ID.")
     public void shouldDeleteCategoryTestById() {
 
-        Category category = new Category(1L, "Some description");
+        Category category = new Category(1L, "Some description", Collections.emptyList());
 
         Assertions.assertDoesNotThrow( () -> categoryService.delete(category));
 
@@ -100,7 +101,7 @@ public class CategoryServiceTest {
     @DisplayName("Should update a category by ID.")
     public void shouldUpdateCategoryTestById() {
 
-        Category updatingCategory = new Category(1L, "Some description");
+        Category updatingCategory = new Category(1L, "Some description", Collections.emptyList());
 
         Mockito.when(categoryRepository.save(updatingCategory)).thenReturn(updatingCategory);
 

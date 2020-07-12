@@ -1,7 +1,7 @@
-package br.com.lucas.study.personalfinancialmanagementapi.controller;
+package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
 
-import br.com.lucas.study.personalfinancialmanagementapi.dto.CategoryDTO;
-import br.com.lucas.study.personalfinancialmanagementapi.exception.ApiErrors;
+import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
+import br.com.lucas.study.personalfinancialmanagementapi.resource.exception.ApiErrors;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import org.modelmapper.ModelMapper;
@@ -62,15 +62,5 @@ public class CategoryController {
 
                 }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handleValidationExceptions(MethodArgumentNotValidException exception) {
-        BindingResult bindingResult = exception.getBindingResult();
-        return new ApiErrors(bindingResult);
-    }
-
-
-
 
 }
