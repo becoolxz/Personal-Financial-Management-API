@@ -60,7 +60,7 @@ public class CategoryController {
                     category = categoryService.update(category);
                     return modelMapper.map(category, CategoryDTO.class);
 
-        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

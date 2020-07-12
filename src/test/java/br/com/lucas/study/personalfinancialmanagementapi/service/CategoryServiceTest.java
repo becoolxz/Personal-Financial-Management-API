@@ -3,6 +3,7 @@ package br.com.lucas.study.personalfinancialmanagementapi.service;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.model.repository.CategoryRepository;
 import br.com.lucas.study.personalfinancialmanagementapi.service.impl.CategoryServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +33,7 @@ public class CategoryServiceTest {
 
     @Test
     @DisplayName("Should save a category")
-    public void saveBookTest() {
+    public void shouldSaveBookTest() {
         Category category = new Category();
         category.setDescription("Some description");
 
@@ -42,4 +45,80 @@ public class CategoryServiceTest {
         assertThat(savedCategory.getId()).isNotNull();
         assertThat(savedCategory.getDescription()).isEqualTo("Some description");
     }
+
+    @Test
+    @DisplayName("Should get information about a category by ID.")
+    public void shouldGetCategoryDetailsByIdTest() {
+        Long id = 1L;
+
+        Mockito.when(categoryRepository.findById(id))
+                .thenReturn(Optional.of(new Category(id, "Some description")));
+
+        Optional<Category> foundCategory = categoryService.getById(id);
+
+        assertThat(foundCategory.isPresent()).isTrue();
+        assertThat(foundCategory.get().getId()).isEqualTo(id);
+        assertThat(foundCategory.get().getDescription()).isEqualTo("Some description");
+    }
+
+    @Test
+    @DisplayName("Should return empty category object by ID.")
+    public void shouldGetNotFoundCategoryById() {
+
+        long id = 1L;
+
+        Mockito.when(categoryRepository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<Category> category = categoryService.getById(id);
+
+        assertThat(category.isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Should delete a category by ID.")
+    public void shouldDeleteCategoryTestById() {
+
+        Category category = new Category(1L, "Some description");
+
+        Assertions.assertDoesNotThrow( () -> categoryService.delete(category));
+
+        Mockito.verify(categoryRepository, Mockito.times(1)).delete(category);
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when trying to delete a non-existent category.")
+    public void shouldDeleteInvalidCategoryTestById() {
+
+        Category category = new Category();
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> categoryService.delete(category));
+
+        Mockito.verify( categoryRepository, Mockito.never()).delete(category);
+    }
+
+    @Test
+    @DisplayName("Should update a category by ID.")
+    public void shouldUpdateCategoryTestById() {
+
+        Category updatingCategory = new Category(1L, "Some description");
+
+        Mockito.when(categoryRepository.save(updatingCategory)).thenReturn(updatingCategory);
+
+        updatingCategory = categoryService.update(updatingCategory);
+
+        assertThat(updatingCategory.getId()).isEqualTo(1L);
+        assertThat(updatingCategory.getDescription()).isEqualTo("Some description");
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when trying to update a non-existent category.")
+    public void shouldUpdateInvalidCategoryById() {
+
+        Category category = new Category();
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> categoryService.update(category));
+
+        Mockito.verify(categoryRepository, Mockito.never()).save(category);
+    }
+
 }

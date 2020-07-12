@@ -23,17 +23,27 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Optional<Category> getById(long id) {
-        return Optional.empty();
+        return this.categoryRepository.findById(id);
     }
 
     @Override
     public void delete(Category category) {
-
+        if (verifyCategoryAndCategoryIdIsNull(category)) {
+            throw new IllegalArgumentException("Category ID can't be null.");
+        }
+        this.categoryRepository.delete(category);
     }
 
     @Override
     public Category update(Category category) {
-        return null;
+        if(verifyCategoryAndCategoryIdIsNull(category)) {
+            throw new IllegalArgumentException("Category ID can't be null.");
+        }
+        return this.categoryRepository.save(category);
+    }
+
+    private boolean verifyCategoryAndCategoryIdIsNull(Category category) {
+        return category == null || category.getId() == null;
     }
 
 }

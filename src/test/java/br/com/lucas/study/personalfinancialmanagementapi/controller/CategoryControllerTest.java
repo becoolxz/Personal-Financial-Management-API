@@ -40,8 +40,8 @@ public class CategoryControllerTest {
     private CategoryService categoryService;
 
     @Test
-    @DisplayName("should create new category with success.")
-    public void createCategoryTest() throws Exception {
+    @DisplayName("should create a new category.")
+    public void shouldCreateCategoryTest() throws Exception {
 
         CategoryDTO categoryDTO = new CategoryDTO();
 
@@ -65,7 +65,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("should throw an invalid category exception when it doesn't have enough data.")
-    public void createInvalidCategoryTest() throws Exception {
+    public void shouldCreateInvalidCategoryTest() throws Exception {
 
         String json = new ObjectMapper().writeValueAsString(new CategoryDTO());
 
@@ -81,8 +81,8 @@ public class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("Should get information about a category.")
-    public void getCategoryDetailsTest() throws Exception {
+    @DisplayName("Should get information about a category by ID.")
+    public void shouldGetCategoryDetailsByIdTest() throws Exception {
 
         long id = 1L;
 
@@ -104,7 +104,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the " +
                  "ID informed for return information about category.")
-    public void getNotFoundCategoryIdTest() throws Exception {
+    public void shouldGetNotFoundCategoryByIdTest() throws Exception {
 
         BDDMockito.given( categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
 
@@ -119,7 +119,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("Should delete a category.")
-    public void deleteCategoryTest() throws Exception {
+    public void shouldDeleteCategoryTest() throws Exception {
 
         BDDMockito.given(categoryService.getById(Mockito.anyLong()))
                 .willReturn(Optional.of(new Category(1L,"Some category")));
@@ -136,7 +136,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the "+
                  "ID informed for delete category.")
-    public void deleteNotFoundIdCategoryIdTest() throws Exception {
+    public void shouldDeleteNotFoundIdCategoryByIdTest() throws Exception {
 
         BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
 
@@ -150,7 +150,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("Should update a category.")
-    public void updateCategoryTest() throws Exception {
+    public void shouldUpdateCategoryByIdTest() throws Exception {
 
         long id = 1L;
 
@@ -182,7 +182,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the " +
                  "ID informed for update category.")
-    public void updateNotFoundCategoryId() throws Exception {
+    public void shouldUpdateNotFoundCategoryById() throws Exception {
 
         CategoryDTO categoryDTO = new CategoryDTO();
 
@@ -202,6 +202,5 @@ public class CategoryControllerTest {
                 .perform(requestBuilder)
                 .andExpect(status().isNotFound());
     }
-
 
 }
