@@ -5,6 +5,8 @@ import br.com.lucas.study.personalfinancialmanagementapi.model.repository.Transa
 import br.com.lucas.study.personalfinancialmanagementapi.service.TransactionService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class TransactionImpl implements TransactionService {
 
@@ -17,6 +19,33 @@ public class TransactionImpl implements TransactionService {
     @Override
     public Transaction save(Transaction transaction) {
         return transactionRepository.save(transaction);
+    }
+
+    @Override
+    public Transaction update(Transaction transaction) {
+        if (verifyTransactionAndTransactionIdIsNull(transaction)) {
+            throw new IllegalArgumentException("Transaction ID can't be null.");
+        }
+
+        return transactionRepository.save(transaction);
+    }
+
+    @Override
+    public void delete(Transaction transaction) {
+        if (verifyTransactionAndTransactionIdIsNull(transaction)) {
+            throw new IllegalArgumentException("Transaction ID can't be null.");
+        }
+
+        transactionRepository.delete(transaction);
+    }
+
+    @Override
+    public Optional<Transaction> findById(Long id) {
+        return transactionRepository.findById(id);
+    }
+
+    private boolean verifyTransactionAndTransactionIdIsNull(Transaction transaction) {
+        return transaction == null || transaction.getId() == null;
     }
 
 }

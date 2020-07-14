@@ -1,13 +1,10 @@
 package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
 
 import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
-import br.com.lucas.study.personalfinancialmanagementapi.resource.exception.ApiErrors;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 

@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,37 @@ public class TransactionRepositoryTest {
 
         assertThat(savedTransaction).isNotNull();
     }
+
+    @Test
+    @DisplayName("Should delete a transaction.")
+    public void shouldDeleteTransaction() {
+
+        Transaction transaction = createTransaction();
+
+        entityManager.persist(transaction);
+
+        Transaction foundTransaction = entityManager.find(Transaction.class, transaction.getId());
+
+        transactionRepository.delete(foundTransaction);
+
+        Transaction deletedTransaction = entityManager.find(Transaction.class, foundTransaction.getId());
+
+        assertThat(deletedTransaction).isNull();
+    }
+
+    @Test
+    @DisplayName("Should get a transaction by ID.")
+    public void shouldGetTransactionByID() {
+
+        Transaction transaction = createTransaction();
+
+        entityManager.persist(transaction);
+
+        Optional<Transaction> foundTransactionOpt = transactionRepository.findById(transaction.getId());
+
+        assertThat(foundTransactionOpt.isPresent()).isTrue();
+    }
+
 
     public Transaction createTransaction() {
         Transaction transaction = new Transaction();

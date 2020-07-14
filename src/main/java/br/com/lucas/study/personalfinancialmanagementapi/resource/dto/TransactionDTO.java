@@ -16,7 +16,7 @@ public class TransactionDTO {
     private String description;
 
     @NotEmpty
-    private String value;
+    private Double value;
 
     @NotEmpty
     private String typeTransaction;
@@ -43,7 +43,7 @@ public class TransactionDTO {
         return description;
     }
 
-    public String getValue() {
+    public Double getValue() {
         return value;
     }
 
@@ -75,7 +75,7 @@ public class TransactionDTO {
         this.description = description;
     }
 
-    public void setValue(String value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
