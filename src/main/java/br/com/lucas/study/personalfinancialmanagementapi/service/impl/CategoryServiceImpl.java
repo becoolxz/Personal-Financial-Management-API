@@ -27,19 +27,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(Category category) {
-        if (verifyCategoryAndCategoryIdIsNull(category)) {
-            throw new IllegalArgumentException("Category ID can't be null.");
-        }
-        this.categoryRepository.delete(category);
-    }
-
-    @Override
     public Category update(Category category) {
         if(verifyCategoryAndCategoryIdIsNull(category)) {
             throw new IllegalArgumentException("Category ID can't be null.");
         }
         return this.categoryRepository.save(category);
+    }
+
+    @Override
+    public void delete(Category category) {
+        if (verifyCategoryAndCategoryIdIsNull(category)) {
+            throw new IllegalArgumentException("Category ID can't be null.");
+        }
+        this.categoryRepository.delete(category);
     }
 
     private boolean verifyCategoryAndCategoryIdIsNull(Category category) {

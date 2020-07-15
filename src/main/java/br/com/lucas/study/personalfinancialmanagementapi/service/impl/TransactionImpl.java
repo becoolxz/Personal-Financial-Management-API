@@ -17,6 +17,11 @@ public class TransactionImpl implements TransactionService {
     }
 
     @Override
+    public Optional<Transaction> getById(Long id) {
+        return transactionRepository.findById(id);
+    }
+
+    @Override
     public Transaction save(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
@@ -37,11 +42,6 @@ public class TransactionImpl implements TransactionService {
         }
 
         transactionRepository.delete(transaction);
-    }
-
-    @Override
-    public Optional<Transaction> getById(Long id) {
-        return transactionRepository.findById(id);
     }
 
     private boolean verifyTransactionAndTransactionIdIsNull(Transaction transaction) {

@@ -50,7 +50,7 @@ public class TransactionServiceTest {
         assertThat(foundTransaction.get().getDescription()).isEqualTo("Some transaction");
         assertThat(foundTransaction.get().getCategory()).isNotNull();
         assertThat(foundTransaction.get().getValue()).isEqualTo(400.0);
-        assertThat(foundTransaction.get().getTypeTransaction()).isEqualTo(TypeTransaction.SOME_TYPE);
+        assertThat(foundTransaction.get().getTypeTransaction()).isEqualTo(TypeTransaction.OUTPUT);
         assertThat(foundTransaction.get().getMonth()).isEqualTo(7);
         assertThat(foundTransaction.get().getYear()).isEqualTo("2020");
     }
@@ -153,7 +153,7 @@ public class TransactionServiceTest {
         transaction.setDescription("Some transaction");
         transaction.setCategory(new Category(1L, "Some Category", Collections.emptyList()));
         transaction.setValue(400.0);
-        transaction.setTypeTransaction(TypeTransaction.SOME_TYPE);
+        transaction.setTypeTransaction(TypeTransaction.OUTPUT);
         transaction.setYear("2020");
         transaction.setMonth(7);
 

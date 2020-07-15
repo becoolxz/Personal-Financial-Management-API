@@ -6,11 +6,12 @@ import java.util.Optional;
 
 public interface CategoryService {
 
+    Optional<Category> getById(long id);
+
     Category save(Category category);
 
-    Optional<Category> getById(long id);
+    Category update(Category category);
 
     void delete(Category category);
 
-    Category update(Category category);
 }

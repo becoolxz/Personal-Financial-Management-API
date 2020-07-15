@@ -68,7 +68,7 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("data.categoryName").value("Some Category"))
                 .andExpect(jsonPath("data.description").value("Some Transaction"))
                 .andExpect(jsonPath("data.value").value("400.0"))
-                .andExpect(jsonPath("data.typeTransaction").value("SOME_TYPE"))
+                .andExpect(jsonPath("data.typeTransaction").value("INPUT"))
                 .andExpect(jsonPath("data.year").value("2020"))
                 .andExpect(jsonPath("data.month").value("7"));
     }
@@ -229,7 +229,7 @@ public class TransactionControllerTest {
         transactionDTO.setCategoryName("Some Category");
         transactionDTO.setDescription("Some Transaction");
         transactionDTO.setValue(400.0);
-        transactionDTO.setTypeTransaction("SOME_TYPE");
+        transactionDTO.setTypeTransaction("INPUT");
         transactionDTO.setYear("2020");
         transactionDTO.setMonth("7");
 
@@ -245,7 +245,7 @@ public class TransactionControllerTest {
         transaction.setCategory(new Category(1L, "Some Category", Collections.emptyList()));
 
         transaction.setValue(400.0);
-        transaction.setTypeTransaction(TypeTransaction.SOME_TYPE);
+        transaction.setTypeTransaction(TypeTransaction.INPUT);
         transaction.setYear("2020");
         transaction.setMonth(7);
 
