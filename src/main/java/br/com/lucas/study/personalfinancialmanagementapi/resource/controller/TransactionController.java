@@ -57,7 +57,7 @@ public class TransactionController {
     public ResponseEntity<Response<TransactionDTO>> get(@PathVariable Long id) {
         Response<TransactionDTO> response = new Response<>();
 
-        Transaction transaction = transactionService.findById(id)
+        Transaction transaction = transactionService.getById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Category category = categoryService.getById(transaction.getCategory().getId())
@@ -75,7 +75,7 @@ public class TransactionController {
 
     @PutMapping("{id}")
     public TransactionDTO update(@PathVariable Long id, TransactionDTO transactionDTO) {
-        return transactionService.findById(id).map(transaction -> {
+        return transactionService.getById(id).map(transaction -> {
 
             transaction.setDescription(transactionDTO.getDescription());
             transaction.setValue(transactionDTO.getValue());
@@ -88,7 +88,7 @@ public class TransactionController {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        Transaction transaction = transactionService.findById(id)
+        Transaction transaction = transactionService.getById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         transactionService.delete(transaction);

@@ -6,7 +6,7 @@ public class CategoryDTO {
 
     private Long id;
 
-    @NotEmpty
+    @NotEmpty(message = "The field 'description' must not be empty.")
     private String description;
 
     public Long getId() {

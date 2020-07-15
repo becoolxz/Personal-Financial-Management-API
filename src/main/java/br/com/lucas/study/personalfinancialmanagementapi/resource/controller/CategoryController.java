@@ -2,9 +2,11 @@ package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
 
 import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
+import br.com.lucas.study.personalfinancialmanagementapi.resource.response.Response;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,21 +24,48 @@ public class CategoryController {
         this.modelMapper = modelMapper;
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<Response<CategoryDTO>> get(@PathVariable Long id) {
+
+        Response<CategoryDTO> response = new Response<>();
+
+        return categoryService
+                .getById(id)
+                .map( category -> {
+                            response.setData(modelMapper.map(category, CategoryDTO.class));
+                            return ResponseEntity.status(HttpStatus.OK).body(response);
+                    }
+                ).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDTO create(@RequestBody @Valid CategoryDTO categoryDTO) {
+    public ResponseEntity<Response<CategoryDTO>> create(@RequestBody @Valid CategoryDTO categoryDTO) {
+
+        Response<CategoryDTO> response = new Response<>();
 
         Category category = categoryService.save(modelMapper.map(categoryDTO, Category.class));
 
-        return modelMapper.map(category, CategoryDTO.class);
+        response.setData(modelMapper.map(category, CategoryDTO.class));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("{id}")
-    public CategoryDTO get(@PathVariable Long id) {
-        return categoryService
-                .getById(id)
-                .map( category -> modelMapper.map(category, CategoryDTO.class))
-                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    @PutMapping("{id}")
+    public ResponseEntity<Response<CategoryDTO>> update(@PathVariable Long id, CategoryDTO categoryDTO) {
+
+        Response<CategoryDTO> response = new Response<>();
+
+        return categoryService.getById(id)
+                .map(category -> {
+
+                    category.setDescription(categoryDTO.getDescription());
+                    category = categoryService.update(category);
+
+                    response.setData(modelMapper.map(category, CategoryDTO.class));
+
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
+
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("{id}")
@@ -46,18 +75,6 @@ public class CategoryController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         categoryService.delete(category);
-    }
-
-    @PutMapping("{id}")
-    public CategoryDTO update(@PathVariable Long id, CategoryDTO categoryDTO) {
-        return categoryService.getById(id)
-                .map(category -> {
-
-                    category.setDescription(categoryDTO.getDescription());
-                    category = categoryService.update(category);
-                    return modelMapper.map(category, CategoryDTO.class);
-
-                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }

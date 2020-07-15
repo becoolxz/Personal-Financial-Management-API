@@ -47,7 +47,70 @@ public class TransactionControllerTest {
     private TransactionService transactionService;
 
     @Test
-    @DisplayName("Should create a transaction")
+    @DisplayName("Should get information about a transaction by ID.")
+    public void shouldGetTransactionByID() throws Exception {
+
+        Long id = 1L;
+
+        BDDMockito.given(transactionService.getById(id)).willReturn(Optional.of(createTransaction()));
+
+        BDDMockito.given(categoryService.getById(createTransaction().getCategory().getId()))
+                .willReturn(Optional.of(createTransaction().getCategory()));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(TRANSACTION_API.concat("/"+id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.id").value(1L))
+                .andExpect(jsonPath("data.categoryName").value("Some Category"))
+                .andExpect(jsonPath("data.description").value("Some Transaction"))
+                .andExpect(jsonPath("data.value").value("400.0"))
+                .andExpect(jsonPath("data.typeTransaction").value("SOME_TYPE"))
+                .andExpect(jsonPath("data.year").value("2020"))
+                .andExpect(jsonPath("data.month").value("7"));
+    }
+
+    @Test
+    @DisplayName("Should get the exception 'ResourceNotFoundException' when the Transaction not exists with the " +
+                 "ID informed for GET information about Transaction.")
+    public void shouldGetTransactionAndNotfoundTransactionById() throws Exception {
+
+        BDDMockito.given(transactionService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(TRANSACTION_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category from Transaction not exists with the " +
+                 "ID informed for GET information about Transaction.")
+    public void shouldGetTransactionAndNotFoundCategoryTransactionById() throws Exception {
+
+        Long id = 1L;
+
+        BDDMockito.given(transactionService.getById(id)).willReturn(Optional.of(createTransaction()));
+
+        BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(TRANSACTION_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should create a transaction.")
     public void shouldCreateTransactionTest() throws Exception {
 
         TransactionDTO transactionDTO = createTransactionDTO();
@@ -73,8 +136,8 @@ public class TransactionControllerTest {
     }
 
     @Test
-    @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the " +
-            "ID informed for return information about Transaction.")
+    @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category not exists with the " +
+                 "ID informed for POST information about Transaction.")
     public void shouldGetNotFoundCategoryByIdWhenCreateATransaction() throws Exception {
 
         TransactionDTO transactionDTO = createTransactionDTO();
@@ -93,75 +156,10 @@ public class TransactionControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("Category not found for create a new transaction"));
-
     }
 
     @Test
-    @DisplayName("Should get transaction details by ID.")
-    public void shouldGetTransactionDetailsByID() throws Exception {
-
-        Long id = 1L;
-
-        BDDMockito.given(transactionService.findById(id)).willReturn(Optional.of(createTransaction()));
-
-        BDDMockito.given(categoryService.getById(createTransaction().getCategory().getId()))
-                .willReturn(Optional.of(createTransaction().getCategory()));
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(TRANSACTION_API.concat("/"+id))
-                .accept(MediaType.APPLICATION_JSON);
-
-        mvc
-                .perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("data.id").value(1L))
-                .andExpect(jsonPath("data.categoryName").value("Some Category"))
-                .andExpect(jsonPath("data.description").value("Some Transaction"))
-                .andExpect(jsonPath("data.value").value("400.0"))
-                .andExpect(jsonPath("data.typeTransaction").value("SOME_TYPE"))
-                .andExpect(jsonPath("data.year").value("2020"))
-                .andExpect(jsonPath("data.month").value("7"));
-    }
-
-
-    @Test
-    @DisplayName("Should return the exception 'ResourceNotFoundException' when the Transaction not exists with the " +
-                 "ID informed for return information about transaction.")
-    public void shouldGetNotfoundTransactionById() throws Exception {
-
-        BDDMockito.given(transactionService.findById(Mockito.anyLong())).willReturn(Optional.empty());
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(TRANSACTION_API.concat("/" + 1))
-                .accept(MediaType.APPLICATION_JSON);
-
-        mvc
-                .perform(requestBuilder)
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category from Transaction not exists with the " +
-                 "ID informed for return information about transaction.")
-    public void shouldGetNotFoundCategoryTransactionById() throws Exception {
-
-        Long id = 1L;
-
-        BDDMockito.given(transactionService.findById(id)).willReturn(Optional.of(createTransaction()));
-
-        BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(TRANSACTION_API.concat("/" + 1))
-                .accept(MediaType.APPLICATION_JSON);
-
-        mvc
-                .perform(requestBuilder)
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Should update a transaction")
+    @DisplayName("Should update a transaction.")
     public void shouldUpdateTransaction() throws Exception {
         long id = 1L;
 
@@ -171,7 +169,7 @@ public class TransactionControllerTest {
 
         Transaction updatingTransaction = createTransaction();
 
-        BDDMockito.given(transactionService.findById(id)).willReturn(Optional.of(updatingTransaction));
+        BDDMockito.given(transactionService.getById(id)).willReturn(Optional.of(updatingTransaction));
 
         Transaction updatedTransaction = createTransaction();
 
@@ -199,7 +197,7 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("Should delete a transaction.")
     public void shouldDeleteTransactionTest() throws Exception {
-        BDDMockito.given(transactionService.findById(Mockito.anyLong())).willReturn(Optional.of(createTransaction()));
+        BDDMockito.given(transactionService.getById(Mockito.anyLong())).willReturn(Optional.of(createTransaction()));
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete(TRANSACTION_API.concat("/" + 1));
@@ -214,7 +212,7 @@ public class TransactionControllerTest {
                  "ID informed for delete transaction.")
     public void shouldDeleteNotFoundIdTransactionByIdTest() throws Exception {
 
-        BDDMockito.given(transactionService.findById(Mockito.anyLong())).willReturn(Optional.empty());
+        BDDMockito.given(transactionService.getById(Mockito.anyLong())).willReturn(Optional.empty());
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete(TRANSACTION_API.concat("/" + 1));

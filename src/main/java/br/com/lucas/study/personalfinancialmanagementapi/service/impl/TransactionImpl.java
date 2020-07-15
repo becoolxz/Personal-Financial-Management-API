@@ -40,7 +40,7 @@ public class TransactionImpl implements TransactionService {
     }
 
     @Override
-    public Optional<Transaction> findById(Long id) {
+    public Optional<Transaction> getById(Long id) {
         return transactionRepository.findById(id);
     }
 

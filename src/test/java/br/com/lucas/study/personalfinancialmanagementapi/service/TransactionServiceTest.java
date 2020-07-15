@@ -36,8 +36,42 @@ public class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("Should save a transaction.")
+    @DisplayName("Should find a transaction by ID.")
+    public void shouldGetTransactionById() {
+
+        Transaction transaction = createTransaction();
+
+        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
+
+        Optional<Transaction> foundTransaction = transactionService.getById(transaction.getId());
+
+        assertThat(foundTransaction.isPresent()).isTrue();
+        assertThat(foundTransaction.get().getId()).isEqualTo(1L);
+        assertThat(foundTransaction.get().getDescription()).isEqualTo("Some transaction");
+        assertThat(foundTransaction.get().getCategory()).isNotNull();
+        assertThat(foundTransaction.get().getValue()).isEqualTo(400.0);
+        assertThat(foundTransaction.get().getTypeTransaction()).isEqualTo(TypeTransaction.SOME_TYPE);
+        assertThat(foundTransaction.get().getMonth()).isEqualTo(7);
+        assertThat(foundTransaction.get().getYear()).isEqualTo("2020");
+    }
+
+    @Test
+    @DisplayName("Should get empty transaction object by ID.")
+    public void shouldGetTransactionAndNotFoundTransactionById() {
+
+        long id = 1L;
+
+        Mockito.when(transactionRepository.findById(id)).thenReturn(Optional.empty());
+
+        Optional<Transaction> transactionOpt = transactionService.getById(id);
+
+        assertThat(transactionOpt.isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Should save a new transaction.")
     public void shouldSaveTransaction() {
+
         Transaction savingTransaction = createTransaction();
         savingTransaction.setId(null);
 
@@ -54,6 +88,7 @@ public class TransactionServiceTest {
         assertThat(transaction.getValue()).isEqualTo(savedTransaction.getValue());
         assertThat(transaction.getMonth()).isEqualTo(savedTransaction.getMonth());
         assertThat(transaction.getYear()).isEqualTo(savedTransaction.getYear());
+
     }
 
     @Test
@@ -73,56 +108,42 @@ public class TransactionServiceTest {
         assertThat(updatingTransaction.getTypeTransaction()).isEqualTo(updatingTransaction.getTypeTransaction());
         assertThat(updatingTransaction.getMonth()).isEqualTo(updatingTransaction.getMonth());
         assertThat(updatingTransaction.getYear()).isEqualTo(updatingTransaction.getYear());
+
     }
 
     @Test
     @DisplayName("Should throw an exception when trying to update a non-existent transaction.")
     public void shouldUpdateInvalidTransactionId() {
+
         Transaction transaction = new Transaction();
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> transactionService.update(transaction));
 
         Mockito.verify(transactionRepository, Mockito.never()).save(transaction);
+
     }
 
     @Test
     @DisplayName("Should delete a transaction.")
     public void shouldDeleteTransaction() {
+
         Transaction transaction = createTransaction();
 
         Assertions.assertDoesNotThrow( ()-> transactionService.delete(transaction));
 
         Mockito.verify(transactionRepository, Mockito.times(1)).delete(transaction);
+
     }
 
     @Test
     @DisplayName("Should throw an exception when trying to delete a non-existent transaction.")
     public void shouldDeleteInvalidTransaction()  {
+
         Transaction transaction = new Transaction();
 
         Assertions.assertThrows(IllegalArgumentException.class,  ()-> transactionService.delete(transaction));
 
         Mockito.verify(transactionRepository, Mockito.never()).delete(transaction);
-    }
-
-    @Test
-    @DisplayName("Should find a transaction by ID.")
-    public void shouldFindTransactionById() {
-
-        Transaction transaction = createTransaction();
-
-        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
-
-        Optional<Transaction> foundTransaction = transactionService.findById(transaction.getId());
-
-        assertThat(foundTransaction.isPresent()).isTrue();
-        assertThat(foundTransaction.get().getId()).isEqualTo(1L);
-        assertThat(foundTransaction.get().getDescription()).isEqualTo("Some transaction");
-        assertThat(foundTransaction.get().getCategory()).isNotNull();
-        assertThat(foundTransaction.get().getValue()).isEqualTo(400.0);
-        assertThat(foundTransaction.get().getTypeTransaction()).isEqualTo(TypeTransaction.SOME_TYPE);
-        assertThat(foundTransaction.get().getMonth()).isEqualTo(7);
-        assertThat(foundTransaction.get().getYear()).isEqualTo("2020");
 
     }
 

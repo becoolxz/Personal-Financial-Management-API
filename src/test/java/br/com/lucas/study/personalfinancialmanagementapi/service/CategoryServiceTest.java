@@ -33,23 +33,8 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("Should save a category")
-    public void shouldSaveBookTest() {
-        Category category = new Category();
-        category.setDescription("Some description");
-
-        Mockito.when(categoryRepository.save(category))
-                .thenReturn(new Category(1L, "Some description", Collections.emptyList()));
-
-        Category savedCategory = categoryService.save(category);
-
-        assertThat(savedCategory.getId()).isNotNull();
-        assertThat(savedCategory.getDescription()).isEqualTo("Some description");
-    }
-
-    @Test
     @DisplayName("Should get information about a category by ID.")
-    public void shouldGetCategoryDetailsByIdTest() {
+    public void shouldGetCategoryByIdTest() {
         Long id = 1L;
 
         Mockito.when(categoryRepository.findById(id))
@@ -63,8 +48,8 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("Should return empty category object by ID.")
-    public void shouldGetNotFoundCategoryById() {
+    @DisplayName("Should get empty category object by ID.")
+    public void shouldGetCategoryAndNotFoundCategoryById() {
 
         long id = 1L;
 
@@ -76,25 +61,19 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete a category by ID.")
-    public void shouldDeleteCategoryTestById() {
-
-        Category category = new Category(1L, "Some description", Collections.emptyList());
-
-        Assertions.assertDoesNotThrow( () -> categoryService.delete(category));
-
-        Mockito.verify(categoryRepository, Mockito.times(1)).delete(category);
-    }
-
-    @Test
-    @DisplayName("Should throw an exception when trying to delete a non-existent category.")
-    public void shouldDeleteInvalidCategoryTestById() {
+    @DisplayName("Should save a new category.")
+    public void shouldSaveNewCategoryTest() {
 
         Category category = new Category();
+        category.setDescription("Some description");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> categoryService.delete(category));
+        Mockito.when(categoryRepository.save(category))
+                .thenReturn(new Category(1L, "Some description", Collections.emptyList()));
 
-        Mockito.verify( categoryRepository, Mockito.never()).delete(category);
+        Category savedCategory = categoryService.save(category);
+
+        assertThat(savedCategory.getId()).isNotNull();
+        assertThat(savedCategory.getDescription()).isEqualTo("Some description");
     }
 
     @Test
@@ -120,6 +99,28 @@ public class CategoryServiceTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> categoryService.update(category));
 
         Mockito.verify(categoryRepository, Mockito.never()).save(category);
+    }
+
+    @Test
+    @DisplayName("Should delete a category by ID.")
+    public void shouldDeleteCategoryTestById() {
+
+        Category category = new Category(1L, "Some description", Collections.emptyList());
+
+        Assertions.assertDoesNotThrow( () -> categoryService.delete(category));
+
+        Mockito.verify(categoryRepository, Mockito.times(1)).delete(category);
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when trying to delete a non-existent category.")
+    public void shouldDeleteInvalidCategoryTestById() {
+
+        Category category = new Category();
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> categoryService.delete(category));
+
+        Mockito.verify( categoryRepository, Mockito.never()).delete(category);
     }
 
 }

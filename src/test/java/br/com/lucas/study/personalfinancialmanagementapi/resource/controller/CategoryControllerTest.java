@@ -41,7 +41,44 @@ public class CategoryControllerTest {
     private CategoryService categoryService;
 
     @Test
-    @DisplayName("should create a new category.")
+    @DisplayName("Should get information about a category by ID.")
+    public void shouldGetCategoryByIdTest() throws Exception {
+
+        long id = 1L;
+
+        Category category = new Category(id, "Some category", Collections.emptyList());
+        BDDMockito.given(categoryService.getById(id)).willReturn(Optional.of(category));
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(CATEGORY_API.concat("/"+id))
+                .accept(MediaType.APPLICATION_JSON);
+
+
+        mvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.id").value(1L))
+                .andExpect(jsonPath("data.description").value("Some category"));
+
+    }
+
+    @Test
+    @DisplayName("Should get the status 'ResourceNotFoundException' when the Category not exists with the " +
+                 "ID informed for GET information about category.")
+    public void shouldGetCategoryAndReturnNotFoundCategoryByIdTest() throws Exception {
+
+        BDDMockito.given( categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get(CATEGORY_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should create a new category.")
     public void shouldCreateCategoryTest() throws Exception {
 
         CategoryDTO categoryDTO = new CategoryDTO();
@@ -60,13 +97,13 @@ public class CategoryControllerTest {
 
         mvc.perform(request)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(1L))
-                .andExpect(jsonPath("description").value(categoryDTO.getDescription() ));
+                .andExpect(jsonPath("data.id").value(1L))
+                .andExpect(jsonPath("data.description").value(categoryDTO.getDescription() ));
     }
 
     @Test
-    @DisplayName("should throw an invalid category exception when it doesn't have enough data.")
-    public void shouldCreateInvalidCategoryTest() throws Exception {
+    @DisplayName("Should throw an invalid category exception when it doesn't have enough data.")
+    public void shouldCreateInvalidCategoryWithDescriptionEmptyTest() throws Exception {
 
         String json = new ObjectMapper().writeValueAsString(new CategoryDTO());
 
@@ -78,40 +115,60 @@ public class CategoryControllerTest {
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath(("errors"), hasSize(1)));
+                .andExpect(jsonPath(("errors"), hasSize(1)))
+                .andExpect(jsonPath(("errors[0]")).value("The field 'description' must not be empty."));
     }
 
     @Test
-    @DisplayName("Should get information about a category by ID.")
-    public void shouldGetCategoryDetailsByIdTest() throws Exception {
+    @DisplayName("Should update a category.")
+    public void shouldUpdateCategoryByIdTest() throws Exception {
 
         long id = 1L;
 
-        Category category = new Category(id, "Some category", Collections.emptyList());
-        BDDMockito.given(categoryService.getById(id)).willReturn(Optional.of(category));
+        CategoryDTO categoryDTO = new CategoryDTO();
+
+        categoryDTO.setDescription("Another Category");
+
+        String json = new ObjectMapper().writeValueAsString(categoryDTO);
+
+        Category updatingCategory = new Category(1L, "Some category", Collections.emptyList());
+
+        BDDMockito.given(categoryService.getById(id)).willReturn(Optional.of(updatingCategory));
+
+        BDDMockito.given(categoryService.update(updatingCategory))
+                .willReturn(new Category(1L, "Another Category", Collections.emptyList()));
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(CATEGORY_API.concat("/"+id))
-                .accept(MediaType.APPLICATION_JSON);
+                .put(CATEGORY_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON);
 
-
-        mvc.perform(requestBuilder)
+        mvc
+                .perform(requestBuilder)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(1L))
-                .andExpect(jsonPath("description").value("Some category"));
-
+                .andExpect(jsonPath("data.id").value(id))
+                .andExpect(jsonPath("data.description").value("Another Category"));
     }
 
     @Test
-    @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the " +
-                 "ID informed for return information about category.")
-    public void shouldGetNotFoundCategoryByIdTest() throws Exception {
+    @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category not exists with the " +
+                 "ID informed for UPDATE category.")
+    public void shouldUpdateCategoryAndReturnNotFoundCategoryById() throws Exception {
 
-        BDDMockito.given( categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
+        CategoryDTO categoryDTO = new CategoryDTO();
+
+        categoryDTO.setDescription("Another Category");
+
+        String json = new ObjectMapper().writeValueAsString(categoryDTO);
+
+        BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(CATEGORY_API.concat("/" + 1))
-                .accept(MediaType.APPLICATION_JSON);
+                .put(CATEGORY_API.concat("/" + 1))
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON);
 
         mvc
                 .perform(requestBuilder)
@@ -131,73 +188,17 @@ public class CategoryControllerTest {
         mvc
                 .perform(requestBuilder)
                 .andExpect(status().isNoContent());
-
     }
 
     @Test
-    @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the "+
-                 "ID informed for delete category.")
-    public void shouldDeleteNotFoundIdCategoryByIdTest() throws Exception {
+    @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category not exists with the "+
+                 "ID informed for DELETE category.")
+    public void shouldDeleteCategoryAndReturnNotFoundIdCategoryByIdTest() throws Exception {
 
         BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete(CATEGORY_API.concat("/" + 1));
-
-        mvc
-                .perform(requestBuilder)
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Should update a category.")
-    public void shouldUpdateCategoryByIdTest() throws Exception {
-
-        long id = 1L;
-
-        CategoryDTO categoryDTO = new CategoryDTO();
-
-        categoryDTO.setDescription("Another Category");
-
-        String json = new ObjectMapper().writeValueAsString(categoryDTO);
-
-        Category updatingCategory = new Category(1L, "Some category", Collections.emptyList());
-
-        BDDMockito.given(categoryService.getById(id)).willReturn(Optional.of(updatingCategory));
-
-        BDDMockito.given(categoryService.update(updatingCategory)).willReturn(new Category(1L, "Another Category", Collections.emptyList()));
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .put(CATEGORY_API.concat("/" + 1))
-                .accept(MediaType.APPLICATION_JSON)
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        mvc
-                .perform(requestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(id))
-                .andExpect(jsonPath("description").value("Another Category"));
-    }
-
-    @Test
-    @DisplayName("Should return the exception 'ResourceNotFoundException' when the Category not exists with the " +
-                 "ID informed for update category.")
-    public void shouldUpdateNotFoundCategoryById() throws Exception {
-
-        CategoryDTO categoryDTO = new CategoryDTO();
-
-        categoryDTO.setDescription("Another Category");
-
-        String json = new ObjectMapper().writeValueAsString(categoryDTO);
-
-        BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .put(CATEGORY_API.concat("/" + 1))
-                .accept(MediaType.APPLICATION_JSON)
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON);
 
         mvc
                 .perform(requestBuilder)
