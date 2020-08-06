@@ -5,7 +5,6 @@ import br.com.lucas.study.personalfinancialmanagementapi.model.enums.Role;
 import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.UserDto;
 import br.com.lucas.study.personalfinancialmanagementapi.security.JwtAuthenticationEntryPoint;
 import br.com.lucas.study.personalfinancialmanagementapi.security.JwtUser;
-import br.com.lucas.study.personalfinancialmanagementapi.security.configs.WebSecurityConfig;
 import br.com.lucas.study.personalfinancialmanagementapi.security.utils.JwtTokenUtil;
 import br.com.lucas.study.personalfinancialmanagementapi.service.UserService;
 import br.com.lucas.study.personalfinancialmanagementapi.util.PasswordUtil;
@@ -29,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @WebMvcTest(controllers = UserController.class)
 @AutoConfigureMockMvc
-//@ContextConfiguration(classes = WebSecurityConfig.class)
 public class UserControllerTest {
 
     private static final String USER_API = "/api/users";
@@ -54,21 +53,7 @@ public class UserControllerTest {
     private UserDetailsService userDetailsService;
 
     @MockBean
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-   // @Autowired
-   // private WebApplicationContext context;
-
-    /*
-    @BeforeEach
-    public void setup() {
-        mvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-    }
-     */
-
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Test
     @DisplayName("Should create a new User.")
@@ -82,11 +67,11 @@ public class UserControllerTest {
 
         JwtUser newJwtUser = createJwtUser();
 
-        String token = "algummm-tokeeen";
+        String token = "Any-token";
 
-        BDDMockito.given(userService.newUser(newUser)).willReturn(newUser);
+        BDDMockito.given(userService.newUser(any(User.class))).willReturn(newUser);
 
-        BDDMockito.given(userDetailsService.loadUserByUsername(userDto.getEmail())).willReturn(newJwtUser);
+        BDDMockito.given(userDetailsService.loadUserByUsername(newUser.getEmail())).willReturn(newJwtUser);
 
         BDDMockito.given(jwtTokenUtil.obtainToken(newJwtUser)).willReturn(token);
 

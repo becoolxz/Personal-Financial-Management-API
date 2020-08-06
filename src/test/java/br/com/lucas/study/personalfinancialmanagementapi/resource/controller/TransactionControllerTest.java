@@ -4,6 +4,8 @@ import br.com.lucas.study.personalfinancialmanagementapi.model.enums.TypeTransac
 import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.TransactionDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Transaction;
+import br.com.lucas.study.personalfinancialmanagementapi.security.JwtAuthenticationEntryPoint;
+import br.com.lucas.study.personalfinancialmanagementapi.security.utils.JwtTokenUtil;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import br.com.lucas.study.personalfinancialmanagementapi.service.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,15 +20,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -46,8 +50,19 @@ public class TransactionControllerTest {
     @MockBean
     private TransactionService transactionService;
 
+    @MockBean
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    @MockBean
+    private JwtTokenUtil jwtTokenUtil;
+
+
     @Test
     @DisplayName("Should get information about a transaction by ID.")
+    @WithMockUser(value = "Lucas")
     public void shouldGetTransactionByID() throws Exception {
 
         Long id = 1L;
@@ -63,6 +78,7 @@ public class TransactionControllerTest {
 
         mvc
                 .perform(requestBuilder)
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("data.id").value(1L))
                 .andExpect(jsonPath("data.categoryName").value("Some Category"))
@@ -76,6 +92,7 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("Should get the exception 'ResourceNotFoundException' when the Transaction not exists with the " +
                  "ID informed for GET information about Transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldGetTransactionAndNotfoundTransactionById() throws Exception {
 
         BDDMockito.given(transactionService.getById(Mockito.anyLong())).willReturn(Optional.empty());
@@ -92,6 +109,7 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category from Transaction not exists with the " +
                  "ID informed for GET information about Transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldGetTransactionAndNotFoundCategoryTransactionById() throws Exception {
 
         Long id = 1L;
@@ -111,6 +129,7 @@ public class TransactionControllerTest {
 
     @Test
     @DisplayName("Should create a transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldCreateTransactionTest() throws Exception {
 
         TransactionDTO transactionDTO = createTransactionDTO();
@@ -131,6 +150,7 @@ public class TransactionControllerTest {
 
         mvc
                 .perform(requestBuilder)
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("data").value("Transaction saved successfully!!!"));
     }
@@ -138,6 +158,7 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category not exists with the " +
                  "ID informed for POST information about Transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldGetNotFoundCategoryByIdWhenCreateATransaction() throws Exception {
 
         TransactionDTO transactionDTO = createTransactionDTO();
@@ -153,6 +174,7 @@ public class TransactionControllerTest {
 
         mvc
                 .perform(requestBuilder)
+                .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errors", Matchers.hasSize(1)))
                 .andExpect(jsonPath("errors[0]").value("Category not found for create a new transaction"));
@@ -160,6 +182,7 @@ public class TransactionControllerTest {
 
     @Test
     @DisplayName("Should update a transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldUpdateTransaction() throws Exception {
         long id = 1L;
 
@@ -186,6 +209,7 @@ public class TransactionControllerTest {
 
         mvc
                 .perform(requestBuilder)
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(id))
                 .andExpect(jsonPath("description").value("Another Description"))
@@ -196,6 +220,7 @@ public class TransactionControllerTest {
 
     @Test
     @DisplayName("Should delete a transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldDeleteTransactionTest() throws Exception {
         BDDMockito.given(transactionService.getById(Mockito.anyLong())).willReturn(Optional.of(createTransaction()));
 
@@ -210,6 +235,7 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("Should return the exception 'ResourceNotFoundException' when the Transaction not exists with the "+
                  "ID informed for delete transaction.")
+    @WithMockUser(value = "Lucas")
     public void shouldDeleteNotFoundIdTransactionByIdTest() throws Exception {
 
         BDDMockito.given(transactionService.getById(Mockito.anyLong())).willReturn(Optional.empty());

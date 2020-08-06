@@ -2,6 +2,8 @@ package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
 
 import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
+import br.com.lucas.study.personalfinancialmanagementapi.security.JwtAuthenticationEntryPoint;
+import br.com.lucas.study.personalfinancialmanagementapi.security.utils.JwtTokenUtil;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +28,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -40,8 +45,18 @@ public class CategoryControllerTest {
     @MockBean
     private CategoryService categoryService;
 
+    @MockBean
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    @MockBean
+    private JwtTokenUtil jwtTokenUtil;
+
     @Test
     @DisplayName("Should get information about a category by ID.")
+    @WithMockUser(value = "Lucas")
     public void shouldGetCategoryByIdTest() throws Exception {
 
         long id = 1L;
@@ -55,6 +70,7 @@ public class CategoryControllerTest {
 
 
         mvc.perform(requestBuilder)
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("data.id").value(1L))
                 .andExpect(jsonPath("data.description").value("Some category"));
@@ -64,6 +80,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Should get the status 'ResourceNotFoundException' when the Category not exists with the " +
                  "ID informed for GET information about category.")
+    @WithMockUser(value = "Lucas")
     public void shouldGetCategoryAndReturnNotFoundCategoryByIdTest() throws Exception {
 
         BDDMockito.given( categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
@@ -79,6 +96,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("Should create a new category.")
+    @WithMockUser(value = "Lucas")
     public void shouldCreateCategoryTest() throws Exception {
 
         CategoryDTO categoryDTO = new CategoryDTO();
@@ -96,6 +114,7 @@ public class CategoryControllerTest {
                 .content(json);
 
         mvc.perform(request)
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("data.id").value(1L))
                 .andExpect(jsonPath("data.description").value(categoryDTO.getDescription() ));
@@ -103,6 +122,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("Should throw an invalid category exception when it doesn't have enough data.")
+    @WithMockUser(value = "Lucas")
     public void shouldCreateInvalidCategoryWithDescriptionEmptyTest() throws Exception {
 
         String json = new ObjectMapper().writeValueAsString(new CategoryDTO());
@@ -114,6 +134,7 @@ public class CategoryControllerTest {
                 .content(json);
 
         mvc.perform(request)
+                .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath(("errors"), hasSize(1)))
                 .andExpect(jsonPath(("errors[0]")).value("The field 'description' must not be empty."));
@@ -121,6 +142,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("Should update a category.")
+    @WithMockUser(value = "Lucas")
     public void shouldUpdateCategoryByIdTest() throws Exception {
 
         long id = 1L;
@@ -146,6 +168,7 @@ public class CategoryControllerTest {
 
         mvc
                 .perform(requestBuilder)
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("data.id").value(id))
                 .andExpect(jsonPath("data.description").value("Another Category"));
@@ -154,6 +177,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category not exists with the " +
                  "ID informed for UPDATE category.")
+    @WithMockUser(value = "Lucas")
     public void shouldUpdateCategoryAndReturnNotFoundCategoryById() throws Exception {
 
         CategoryDTO categoryDTO = new CategoryDTO();
@@ -177,6 +201,7 @@ public class CategoryControllerTest {
 
     @Test
     @DisplayName("Should delete a category.")
+    @WithMockUser(value = "Lucas")
     public void shouldDeleteCategoryTest() throws Exception {
 
         BDDMockito.given(categoryService.getById(Mockito.anyLong()))
@@ -193,6 +218,7 @@ public class CategoryControllerTest {
     @Test
     @DisplayName("Should get the exception 'ResourceNotFoundException' when the Category not exists with the "+
                  "ID informed for DELETE category.")
+    @WithMockUser(value = "Lucas")
     public void shouldDeleteCategoryAndReturnNotFoundIdCategoryByIdTest() throws Exception {
 
         BDDMockito.given(categoryService.getById(Mockito.anyLong())).willReturn(Optional.empty());
