@@ -13,6 +13,7 @@ import br.com.lucas.study.personalfinancialmanagementapi.service.UserService;
 import br.com.lucas.study.personalfinancialmanagementapi.util.PasswordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -82,33 +83,6 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
-
-
-    /*
-    @PostMapping("/sign-up")
-    public ResponseEntity<Response<TokenDto>> save(@Valid @RequestBody SignUpDto signUpDto, BindingResult result) {
-
-        Response<TokenDto> response = new Response<>();
-
-        checkUserSignUpData(signUpDto, result);
-
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(response);
-        }
-
-        User user = userService.newUser(convertNewUserDto(signUpDto));
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-
-        String token = jwtTokenUtil.obtainToken(userDetails);
-
-        response.setData(new TokenDto(token));
-
-        return ResponseEntity.ok(response);
-    }
-
-     */
 
     @PutMapping
     public ResponseEntity<Response<String>> update(@Valid @RequestBody UserDto userDto,
