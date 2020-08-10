@@ -63,24 +63,24 @@ public class UserResourceTest {
     @DisplayName("Should return a User by JwtUser.")
     public void shouldReturnUserByJwtUserTest() throws Exception {
 
-        UserDto userDto = createUserDto();
+        User foundUser = createUser();
 
-        JwtUser jwtUser = createJwtUser();
+        JwtUser foundJwtUser = createJwtUser();
 
-        BDDMockito.given(userServiceImpl.findUserById(any(Long.class))).willReturn(userDto);
+        BDDMockito.given(userServiceImpl.findUserById(any(Long.class))).willReturn(foundUser);
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get(USER_API)
-                .with(user(jwtUser))
+                .with(user(foundJwtUser))
                 .accept(MediaType.APPLICATION_JSON);
 
         mvc
                 .perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("data.id").value(userDto.getId()))
-                .andExpect(jsonPath("data.name").value(userDto.getName()))
-                .andExpect(jsonPath("data.email").value(userDto.getEmail()));
+                .andExpect(jsonPath("data.id").value(foundUser.getId()))
+                .andExpect(jsonPath("data.name").value(foundUser.getName()))
+                .andExpect(jsonPath("data.email").value(foundUser.getEmail()));
 
     }
 

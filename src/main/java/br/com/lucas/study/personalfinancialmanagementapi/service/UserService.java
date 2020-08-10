@@ -8,14 +8,15 @@ public interface UserService {
 
     User findUserByUsernameEmail(String usernameEmail);
 
-    UserDto findUserById(Long id);
+    User findUserById(Long id);
 
     User save(User user);
 
     void delete(Long id);
 
-    UserDto update(UserDto userDto);
+    User update(UserDto userDto);
 
     User createNewUser(SignUpDto signUpDto);
 
+    void verifyUserAlreadyExistsWithUsernameEmail(String usernameEmail);
 }

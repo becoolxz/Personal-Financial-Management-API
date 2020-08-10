@@ -45,9 +45,11 @@ public class UserResource {
 
         Response<UserDto> response = new Response<>();
 
-        UserDto userDto = userServiceImpl.findUserById(jwtUser.getId());
+        User user = userServiceImpl.findUserById(jwtUser.getId());
 
-        response.setData(userDto);
+        UserDto userDtoResponse = new UserDto(user.getId(), user.getName(), user.getEmail());
+
+        response.setData(userDtoResponse);
 
         return ResponseEntity.ok(response);
     }

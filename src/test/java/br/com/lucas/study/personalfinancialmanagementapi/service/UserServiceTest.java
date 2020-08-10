@@ -1,7 +1,7 @@
 package br.com.lucas.study.personalfinancialmanagementapi.service;
 
-import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.SignUpDto;
 import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.UserDto;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception.UserAlreadyExistsException;
 import br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception.UserNotFoundException;
 import br.com.lucas.study.personalfinancialmanagementapi.model.User;
 import br.com.lucas.study.personalfinancialmanagementapi.model.enums.Role;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -74,12 +75,12 @@ public class UserServiceTest {
 
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        UserDto foundUserDto = userService.findUserById(user.getId());
+        User foundUser = userService.findUserById(user.getId());
 
-        assertThat(foundUserDto).isNotNull();
-        assertThat(foundUserDto.getId()).isEqualTo(user.getId());
-        assertThat(foundUserDto.getName()).isEqualTo(user.getName());
-        assertThat(foundUserDto.getEmail()).isEqualTo(user.getEmail());
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getId()).isEqualTo(user.getId());
+        assertThat(foundUser.getName()).isEqualTo(user.getName());
+        assertThat(foundUser.getEmail()).isEqualTo(user.getEmail());
     }
 
     @Test
@@ -114,15 +115,33 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when not found user when saving a user.")
-    public void shouldCreateUserAndNotFoundUser() {
+    @DisplayName("Should not throw exception when user already exists with username email when saving a user.")
+    public void shouldVerifyUsernameEmailAlreadyExistsAndNotReturnUserAlreadyExistsException() {
 
-        SignUpDto signUpDto = createSignUpDto();
+        String usernameEmail = "lucas@email.com";
 
-        Assertions.assertThrows(UserNotFoundException.class, () -> userService.createNewUser(signUpDto));
+        BDDMockito.given(userRepository.findByEmail(usernameEmail)).willReturn(Optional.empty());
 
-        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(signUpDto.getEmail());
+        Assertions.assertDoesNotThrow(() -> userService.verifyUserAlreadyExistsWithUsernameEmail(usernameEmail));
 
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(usernameEmail);
+    }
+
+
+    @Test
+    @DisplayName("Should throw exception when user already exists with username email when saving a user.")
+    public void shouldVerifyUsernameEmailAlreadyExistsAndReturnUserAlreadyExistsException() {
+
+        String usernameEmail = "lucas@email.com";
+
+        User foundUser = createUser();
+
+        BDDMockito.given(userRepository.findByEmail(usernameEmail)).willReturn(Optional.of(foundUser));
+
+        Assertions.assertThrows(UserAlreadyExistsException.class, () ->
+                userService.verifyUserAlreadyExistsWithUsernameEmail(usernameEmail));
+
+        Mockito.verify(userRepository, Mockito.times(1)).findByEmail(usernameEmail);
     }
 
     @Test
@@ -135,13 +154,18 @@ public class UserServiceTest {
 
         User foundUser = createUser();
 
+        User updatedMockUser = createUser();
+        updatedMockUser.setName("Marcos");
+
         Mockito.when(userRepository.findById(updatingUserDto.getId())).thenReturn(Optional.of(foundUser));
 
-        UserDto updatedUserDto = userService.update(updatingUserDto);
+        Mockito.when(userRepository.save(foundUser)).thenReturn(updatedMockUser);
 
-        assertThat(foundUser.getId()).isNotNull();
-        assertThat(foundUser.getEmail()).isEqualTo(updatedUserDto.getEmail());
-        assertThat(foundUser.getName()).isEqualTo(updatedUserDto.getName());
+        User updatedUser = userService.update(updatingUserDto);
+
+        assertThat(updatedUser.getId()).isNotNull();
+        assertThat(updatedUser.getEmail()).isEqualTo(updatingUserDto.getEmail());
+        assertThat(updatedUser.getName()).isEqualTo(updatingUserDto.getName());
     }
 
     @Test
@@ -174,9 +198,4 @@ public class UserServiceTest {
 
         return userDto;
     }
-
-    private SignUpDto createSignUpDto() {
-        return new SignUpDto("Lucas", "lucas@email.com", "123123");
-    }
-
 }

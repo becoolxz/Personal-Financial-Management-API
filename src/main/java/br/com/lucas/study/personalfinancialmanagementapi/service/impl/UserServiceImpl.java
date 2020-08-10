@@ -1,5 +1,6 @@
 package br.com.lucas.study.personalfinancialmanagementapi.service.impl;
 
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception.UserAlreadyExistsException;
 import br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception.UserNotFoundException;
 import br.com.lucas.study.personalfinancialmanagementapi.model.User;
 import br.com.lucas.study.personalfinancialmanagementapi.model.enums.Role;
@@ -10,6 +11,8 @@ import br.com.lucas.study.personalfinancialmanagementapi.service.UserService;
 import br.com.lucas.study.personalfinancialmanagementapi.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,18 +31,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findUserById(Long id) {
-
-        User user = this.userRepository.findById(id)
+    public User findUserById(Long id) {
+        return this.userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not Found"));
-
-        UserDto userDto = new UserDto();
-
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
-
-        return userDto;
     }
 
     @Override
@@ -53,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(UserDto userDto) {
+    public User update(UserDto userDto) {
 
         User user = this.userRepository.findById(userDto.getId())
                 .orElseThrow(() -> new UserNotFoundException("User not Found"));
@@ -61,27 +55,31 @@ public class UserServiceImpl implements UserService {
         if (userDto.getName() != null) user.setName(userDto.getName());
         if (userDto.getEmail() != null) user.setEmail(userDto.getEmail());
 
-        this.userRepository.save(user);
+        return this.userRepository.save(user);
 
-        UserDto userDtoResponse = new UserDto();
-
-        userDtoResponse.setName(user.getName());
-        userDtoResponse.setEmail(user.getEmail());
-
-        return userDtoResponse;
     }
 
     @Override
     public User createNewUser(SignUpDto signUpDto) {
-        User user = new User();
-        user.setName(signUpDto.getName());
-        user.setEmail(signUpDto.getEmail());
-        user.setProfile(Role.ROLE_USER);
-        user.setPassword(PasswordUtil.generateHashBCryptByPassword(signUpDto.getPassword()));
 
-        this.userRepository.save(user);
+        verifyUserAlreadyExistsWithUsernameEmail(signUpDto.getEmail());
 
-        return user;
+        User newUser = new User();
+
+        newUser.setName(signUpDto.getName());
+        newUser.setEmail(signUpDto.getEmail());
+        newUser.setProfile(Role.ROLE_USER);
+        newUser.setPassword(PasswordUtil.generateHashBCryptByPassword(signUpDto.getPassword()));
+
+        return this.userRepository.save(newUser);
+    }
+
+    @Override
+    public void verifyUserAlreadyExistsWithUsernameEmail(String usernameEmail) {
+        Optional<User> userOpt = this.userRepository.findByEmail(usernameEmail);
+        if (userOpt.isPresent()) {
+            throw new UserAlreadyExistsException("User already exits with email: " + usernameEmail);
+        }
     }
 
 }

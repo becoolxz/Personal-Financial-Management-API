@@ -13,7 +13,7 @@ public class User {
     private String password;
     private Role profile;
 
-    public User(){}
+    public User() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
