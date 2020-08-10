@@ -1,6 +1,6 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.resource;
 
-import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.CategoryDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.security.JwtAuthenticationEntryPoint;
 import br.com.lucas.study.personalfinancialmanagementapi.security.utils.JwtTokenUtil;
@@ -33,9 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = CategoryController.class)
+@WebMvcTest(controllers = CategoryResource.class)
 @AutoConfigureMockMvc
-public class CategoryControllerTest {
+public class CategoryResourceTest {
 
     private static final String CATEGORY_API = "/api/categories";
 

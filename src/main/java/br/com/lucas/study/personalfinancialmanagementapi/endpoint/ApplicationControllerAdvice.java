@@ -1,6 +1,6 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint;
 
-import br.com.lucas.study.personalfinancialmanagementapi.resource.exception.ApiErrors;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception.ApiErrors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;

@@ -1,4 +1,4 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.response;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.response;
 
 import java.util.ArrayList;
 import java.util.List;

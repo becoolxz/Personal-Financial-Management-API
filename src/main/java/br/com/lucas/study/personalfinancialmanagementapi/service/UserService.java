@@ -1,36 +1,21 @@
 package br.com.lucas.study.personalfinancialmanagementapi.service;
 
 import br.com.lucas.study.personalfinancialmanagementapi.model.User;
-import br.com.lucas.study.personalfinancialmanagementapi.model.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.SignUpDto;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.UserDto;
 
-import java.util.Optional;
+public interface UserService {
 
-@Service
-public class UserService {
+    User findUserByUsernameEmail(String usernameEmail);
 
-    private final UserRepository userRepository;
+    UserDto findUserById(Long id);
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    User save(User user);
 
-    public Optional<User> findUserByUsernameEmail(String usernameEmail) {
-        return Optional.ofNullable(this.userRepository.findByEmail(usernameEmail));
-    }
+    void delete(Long id);
 
-    public Optional<User> findUserById(Long id) {
-        return userRepository.findById(id);
-    }
+    UserDto update(UserDto userDto);
 
-    public User newUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public void removeUser(Long id) {
-        userRepository.deleteById(id);
-    }
+    User createNewUser(SignUpDto signUpDto);
 
 }

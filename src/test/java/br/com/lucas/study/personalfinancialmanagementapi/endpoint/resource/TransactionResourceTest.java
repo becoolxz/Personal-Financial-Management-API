@@ -1,7 +1,7 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.resource;
 
 import br.com.lucas.study.personalfinancialmanagementapi.model.enums.TypeTransaction;
-import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.TransactionDTO;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.TransactionDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Transaction;
 import br.com.lucas.study.personalfinancialmanagementapi.security.JwtAuthenticationEntryPoint;
@@ -35,9 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = TransactionController.class)
+@WebMvcTest(controllers = TransactionResource.class)
 @AutoConfigureMockMvc
-public class TransactionControllerTest {
+public class TransactionResourceTest {
 
     private static final String TRANSACTION_API = "/api/transactions";
 

@@ -1,4 +1,4 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.exception;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.web.server.ResponseStatusException;

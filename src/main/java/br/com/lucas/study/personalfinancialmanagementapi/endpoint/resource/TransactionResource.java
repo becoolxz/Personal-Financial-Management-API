@@ -1,10 +1,10 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.resource;
 
-import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.TransactionDTO;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.TransactionDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Transaction;
 import br.com.lucas.study.personalfinancialmanagementapi.model.enums.TypeTransaction;
-import br.com.lucas.study.personalfinancialmanagementapi.resource.response.Response;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.response.Response;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import br.com.lucas.study.personalfinancialmanagementapi.service.TransactionService;
 import org.modelmapper.ModelMapper;
@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/transactions")
-public class TransactionController {
+public class TransactionResource {
 
     private final TransactionService transactionService;
 
@@ -23,8 +23,8 @@ public class TransactionController {
 
     private final ModelMapper modelMapper;
 
-    public TransactionController(TransactionService transactionService, CategoryService categoryService,
-                                 ModelMapper modelMapper) {
+    public TransactionResource(TransactionService transactionService, CategoryService categoryService,
+                               ModelMapper modelMapper) {
         this.transactionService = transactionService;
         this.categoryService = categoryService;
         this.modelMapper = modelMapper;

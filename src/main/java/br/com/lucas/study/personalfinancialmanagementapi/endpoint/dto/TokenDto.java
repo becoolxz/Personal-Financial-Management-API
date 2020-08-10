@@ -1,4 +1,4 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.dto;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto;
 
 public class TokenDto {
 

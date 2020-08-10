@@ -1,4 +1,4 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.exception;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {

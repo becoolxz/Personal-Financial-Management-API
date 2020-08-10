@@ -1,8 +1,8 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.controller;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.resource;
 
-import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.CategoryDTO;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.CategoryDTO;
 import br.com.lucas.study.personalfinancialmanagementapi.model.Category;
-import br.com.lucas.study.personalfinancialmanagementapi.resource.response.Response;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.response.Response;
 import br.com.lucas.study.personalfinancialmanagementapi.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -14,12 +14,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/categories")
-public class CategoryController {
+public class CategoryResource {
 
     private final CategoryService categoryService;
     private final ModelMapper modelMapper;
 
-    public CategoryController(CategoryService categoryService, ModelMapper modelMapper) {
+    public CategoryResource(CategoryService categoryService, ModelMapper modelMapper) {
         this.categoryService = categoryService;
         this.modelMapper = modelMapper;
     }

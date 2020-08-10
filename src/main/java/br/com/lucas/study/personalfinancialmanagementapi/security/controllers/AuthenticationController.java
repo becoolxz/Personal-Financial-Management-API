@@ -1,8 +1,8 @@
 package br.com.lucas.study.personalfinancialmanagementapi.security.controllers;
 
-import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.JwtAuthenticationDto;
-import br.com.lucas.study.personalfinancialmanagementapi.resource.dto.TokenDto;
-import br.com.lucas.study.personalfinancialmanagementapi.resource.response.Response;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.JwtAuthenticationDto;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto.TokenDto;
+import br.com.lucas.study.personalfinancialmanagementapi.endpoint.response.Response;
 import br.com.lucas.study.personalfinancialmanagementapi.security.utils.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

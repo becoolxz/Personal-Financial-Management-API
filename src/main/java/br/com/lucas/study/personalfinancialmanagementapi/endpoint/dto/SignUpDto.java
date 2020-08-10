@@ -1,9 +1,16 @@
-package br.com.lucas.study.personalfinancialmanagementapi.resource.dto;
+package br.com.lucas.study.personalfinancialmanagementapi.endpoint.dto;
+
+import javax.validation.constraints.NotEmpty;
 
 public class SignUpDto {
 
+    @NotEmpty(message = "Name not be empty")
     private String name;
+
+    @NotEmpty(message = "Email not be empty")
     private String email;
+
+    @NotEmpty(message = "Password not be empty")
     private String password;
 
     public SignUpDto() {}
